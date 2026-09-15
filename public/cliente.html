@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal do Cliente - START ADS ENGINE</title>
+  <meta name="description" content="Relatório executivo transparente de performance de tráfego pago para empresários e tomadores de decisão.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="min-h-screen flex flex-col bg-slate-950 text-slate-100 selection:bg-cyan-500 selection:text-white print:bg-white print:text-black">
+
+  <!-- Header Executivo -->
+  <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-40 print:hidden">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-cyan-500 to-emerald-400 p-[2px] flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+              <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400"></i>
+            </div>
+          </div>
+          <div>
+            <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">START ADS ENGINE</span>
+            <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300">Portal Executivo</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="window.print()" class="px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-2 transition-all">
+          <i data-lucide="printer" class="w-3.5 h-3.5 text-cyan-400"></i>
+          <span>Imprimir / Salvar PDF</span>
+        </button>
+        <a href="/gestor" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 text-xs flex items-center gap-1.5 transition-all">
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+          <span>Voltar ao Gestor</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-8">
+    
+    <!-- Topo: Informações do Cliente & Ciclo de Gestão -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800 print:border-black">
+      <div>
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+          <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+          <span>Relatório Oficial de Desempenho</span>
+        </span>
+        <h1 id="nome-cliente-topo" class="text-3xl font-black text-white mt-1 print:text-black">
+          Start Agência Digital
+        </h1>
+        <p class="text-xs text-slate-400 mt-1 print:text-slate-600">
+          Conta: <span id="id-conta-topo" class="font-mono text-slate-300 print:text-black">act_1717085079153654</span> • Ciclo: Últimos 30 dias
+        </p>
+      </div>
+
+      <!-- Badge de Auditoria Start -->
+      <div class="flex items-center gap-3 bg-slate-900/80 border border-slate-800 rounded-2xl p-3 print:border-black">
+        <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+          <i data-lucide="award" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs font-bold text-white block print:text-black">Gestão Profissional</span>
+          <span class="text-[11px] text-slate-400 block print:text-slate-600">Start Agência Digital</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 4 MÉTRICAS COMERCIAIS CLARAS (TRANSPARENTE E SEM JARGÕES)    -->
+    <!-- ============================================================ -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      
+      <!-- Total Investido -->
+      <div class="glass-panel p-5 rounded-2xl border-slate-800 print:border-black print:bg-transparent">
+        <span class="text-xs text-slate-400 font-medium block print:text-slate-600">Total Investido</span>
+        <h3 id="cliente-spend" class="text-2xl sm:text-3xl font-extrabold text-white mt-2 print:text-black">R$ 0,00</h3>
+        <p class="text-[11px] text-slate-500 mt-1 print:text-slate-600">Verba aplicada em anúncios</p>
+      </div>
+
+      <!-- Pessoas Alcançadas -->
+      <div class="glass-panel p-5 rounded-2xl border-slate-800 print:border-black print:bg-transparent">
+        <span class="text-xs text-slate-400 font-medium block print:text-slate-600">Pessoas Alcançadas</span>
+        <h3 id="cliente-reach" class="text-2xl sm:text-3xl font-extrabold text-cyan-400 mt-2 print:text-black">0</h3>
+        <p class="text-[11px] text-slate-500 mt-1 print:text-slate-600">Usuários únicos impactados</p>
+      </div>
+
+      <!-- Cliques / Engajamentos -->
+      <div class="glass-panel p-5 rounded-2xl border-slate-800 print:border-black print:bg-transparent">
+        <span class="text-xs text-slate-400 font-medium block print:text-slate-600">Visitas & Cliques</span>
+        <h3 id="cliente-clicks" class="text-2xl sm:text-3xl font-extrabold text-indigo-400 mt-2 print:text-black">0</h3>
+        <p class="text-[11px] text-slate-500 mt-1 print:text-slate-600">Interessados que clicaram</p>
+      </div>
+
+      <!-- Custo Médio por Clique/Resultado -->
+      <div class="glass-panel p-5 rounded-2xl border-slate-800 print:border-black print:bg-transparent">
+        <span class="text-xs text-slate-400 font-medium block print:text-slate-600">Custo por Interessado</span>
+        <h3 id="cliente-cpc" class="text-2xl sm:text-3xl font-extrabold text-emerald-400 mt-2 print:text-black">R$ 0,00</h3>
+        <p class="text-[11px] text-slate-500 mt-1 print:text-slate-600">Média por pessoa qualificada</p>
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PARECER EXECUTIVO GERADO POR IA (GOOGLE GEMINI FLASH)         -->
+    <!-- ============================================================ -->
+    <section class="glass-panel rounded-2xl p-6 sm:p-8 border-indigo-500/30 space-y-6 print:border-black print:bg-transparent">
+      
+      <div class="flex items-center gap-3 border-b border-slate-800 pb-4 print:border-black">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center shadow-lg">
+          <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-white print:text-black">Parecer Executivo da Inteligência Artificial</h2>
+          <p class="text-xs text-slate-400 print:text-slate-600">Análise gerada pelo Google Gemini Flash em linguagem simples e objetiva.</p>
+        </div>
+      </div>
+
+      <!-- Saudação e Destaque -->
+      <div class="space-y-3">
+        <p id="ia-saudacao" class="text-sm font-semibold text-cyan-300 print:text-black">
+          Carregando análise executiva...
+        </p>
+        <p id="ia-destaque" class="text-base font-bold text-white leading-relaxed print:text-black">
+          ...
+        </p>
+        <p id="ia-desempenho" class="text-sm text-slate-300 leading-relaxed print:text-black">
+          ...
+        </p>
+      </div>
+
+      <!-- Pontos Positivos e Próximos Passos -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-800 print:border-black">
+        
+        <!-- Pontos Fortes -->
+        <div class="p-4 rounded-xl bg-slate-900/70 border border-slate-800 print:border-black print:bg-transparent">
+          <h4 class="text-xs font-bold text-emerald-400 flex items-center gap-1.5 mb-3 print:text-black">
+            <i data-lucide="trending-up" class="w-4 h-4"></i>
+            <span>Destaques & Conquistas do Mês</span>
+          </h4>
+          <ul id="ia-pontos-positivos" class="space-y-2 text-xs text-slate-300 print:text-black">
+            <!-- Renderizado via JS -->
+          </ul>
+        </div>
+
+        <!-- Próximos Passos -->
+        <div class="p-4 rounded-xl bg-slate-900/70 border border-slate-800 print:border-black print:bg-transparent">
+          <h4 class="text-xs font-bold text-cyan-400 flex items-center gap-1.5 mb-3 print:text-black">
+            <i data-lucide="compass" class="w-4 h-4"></i>
+            <span>Plano Estratégico para o Próximo Ciclo</span>
+          </h4>
+          <ul id="ia-proximos-passos" class="space-y-2 text-xs text-slate-300 print:text-black">
+            <!-- Renderizado via JS -->
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Parecer Final -->
+      <div class="p-4 rounded-xl bg-indigo-950/20 border border-indigo-500/20 print:border-black print:bg-transparent">
+        <p id="ia-parecer-final" class="text-xs text-indigo-200 italic leading-relaxed print:text-black">
+          ...
+        </p>
+      </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- RANKING DE VÍDEOS MAIS ASSISTIDOS                            -->
+    <!-- ============================================================ -->
+    <section class="glass-panel rounded-2xl p-6 sm:p-8 border-slate-800 space-y-6 print:border-black print:bg-transparent">
+      <div>
+        <h3 class="text-base font-bold text-white flex items-center gap-2 print:text-black">
+          <i data-lucide="video" class="w-5 h-5 text-indigo-400"></i>
+          <span>Vídeos & Criativos com Maior Retenção do Público</span>
+        </h3>
+        <p class="text-xs text-slate-400 mt-1 print:text-slate-600">Estes são os anúncios que melhor capturaram e prenderam a atenção dos seus potenciais clientes.</p>
+      </div>
+
+      <div id="grid-videos-destaque" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <!-- Renderizado dinamicamente via cliente.js -->
+        <div class="col-span-full py-8 text-center text-slate-500 text-xs">Carregando anúncios em destaque...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-slate-800/80 py-6 text-center text-xs text-slate-500 print:hidden">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p>START ADS ENGINE • Relatório Executivo de Tráfego Pago</p>
+      <p>Gerado para uso exclusivo do cliente.</p>
+    </div>
+  </footer>
+
+  <script src="/js/cliente.js"></script>
+</body>
+</html>

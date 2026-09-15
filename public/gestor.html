@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard do Gestor - START ADS ENGINE</title>
+  <meta name="description" content="Dashboard avançado de tráfego pago com métricas de vídeo (Hook Rate, Hold Rate), detecção de fadiga e Co-Piloto de IA em 1 clique.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js para curva de CPM -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="min-h-screen flex flex-col bg-slate-950 text-slate-100 selection:bg-cyan-500 selection:text-white">
+
+  <!-- Header Superior -->
+  <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-cyan-500 to-emerald-400 p-[2px] flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+              <i data-lucide="zap" class="w-5 h-5 text-cyan-400 group-hover:rotate-12 transition-transform"></i>
+            </div>
+          </div>
+          <div>
+            <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">START ADS ENGINE</span>
+            <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-300">Co-Piloto Gestor</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Links Rápidos -->
+      <nav class="flex items-center gap-3 text-sm">
+        <a href="/criar" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs flex items-center gap-1.5 transition-all shadow-md">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>Nova Campanha</span>
+        </a>
+        <a href="/cliente" id="link-portal-cliente" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all flex items-center gap-1.5 text-xs">
+          <i data-lucide="external-link" class="w-4 h-4 text-emerald-400"></i>
+          <span>Ver como Cliente</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
+    
+    <!-- Topo: Seletor Multi-Conta & Período -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl bg-slate-900/50 border border-slate-800">
+      <div>
+        <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Painel do Especialista</span>
+        <h1 class="text-2xl font-extrabold text-white mt-0.5 flex items-center gap-2">
+          <span>Monitoramento & Co-Piloto IA</span>
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+        </h1>
+      </div>
+
+      <!-- Seletor Multi-Conta -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2">
+          <i data-lucide="building-2" class="w-4 h-4 text-indigo-400"></i>
+          <label for="select-conta-gestor" class="text-xs text-slate-400">Conta:</label>
+          <select id="select-conta-gestor" onchange="trocarConta(this.value)" class="bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer">
+            <option value="act_1717085079153654" class="bg-slate-900">Start Agência Digital (act_1717085079153654)</option>
+          </select>
+        </div>
+
+        <button onclick="carregarDadosDashboard()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all" title="Atualizar Métricas">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- CARD DO CO-PILOTO IA (HUMAN-IN-THE-LOOP COM 1 CLIQUE)         -->
+    <!-- ============================================================ -->
+    <section id="card-copiloto" class="glass-panel rounded-2xl p-6 border-indigo-500/40 relative overflow-hidden shadow-2xl bg-gradient-to-br from-indigo-950/40 via-slate-900 to-slate-950">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        
+        <div class="space-y-3 max-w-3xl">
+          <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+              <i data-lucide="bot" class="w-5 h-5"></i>
+            </span>
+            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30" id="copiloto-severidade">
+              Alerta Crítico Detectado
+            </span>
+            <span class="text-xs text-slate-400">Google Gemini Flash • Análise em Tempo Real</span>
+          </div>
+
+          <h3 id="copiloto-titulo" class="text-xl font-bold text-white">
+            Fadiga Crítica Detectada no Criativo "Vídeo Institucional Antigo"
+          </h3>
+
+          <p id="copiloto-descricao" class="text-sm text-slate-300 leading-relaxed">
+            O criativo atingiu frequência de 2.9x com queda de 43% no CTR e alta no CPC. Manter este criativo ativo está encarecendo o custo de aquisição da conta.
+          </p>
+
+          <div class="flex items-center gap-2 text-xs text-indigo-300">
+            <i data-lucide="arrow-right-circle" class="w-4 h-4"></i>
+            <span id="copiloto-impacto">Pausar o criativo fadigado redirecionará o orçamento para os anúncios com Hook Rate superior a 35%.</span>
+          </div>
+        </div>
+
+        <!-- Botão Acionável (1-Click Action) -->
+        <div class="flex-shrink-0 flex flex-col gap-2">
+          <button type="button" id="btn-aplicar-sugestao" onclick="executarAcaoCopiloto()" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-rose-600 via-rose-500 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-rose-600/30">
+            <i data-lucide="zap" class="w-4 h-4"></i>
+            <span id="copiloto-botao-texto">Aplicar Sugestão (Pausar Anúncio)</span>
+          </button>
+          <span class="text-[11px] text-slate-400 text-center">Decisão com Human-in-the-Loop</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- GRID DE KPIS GERAIS & MÉTRICAS DE VÍDEO (HOOK / HOLD RATE)    -->
+    <!-- ============================================================ -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+      
+      <!-- Total Investido -->
+      <div class="glass-panel p-4 rounded-xl border-slate-800">
+        <span class="text-xs text-slate-400 font-medium">Investimento</span>
+        <h4 id="kpi-spend" class="text-xl font-black text-white mt-1">R$ 0,00</h4>
+        <span class="text-[10px] text-slate-500">Últimos 30 dias</span>
+      </div>
+
+      <!-- Impressões -->
+      <div class="glass-panel p-4 rounded-xl border-slate-800">
+        <span class="text-xs text-slate-400 font-medium">Impressões</span>
+        <h4 id="kpi-impressions" class="text-xl font-black text-slate-200 mt-1">0</h4>
+        <span class="text-[10px] text-slate-500" id="kpi-reach">0 alcance</span>
+      </div>
+
+      <!-- Cliques & CTR -->
+      <div class="glass-panel p-4 rounded-xl border-slate-800">
+        <span class="text-xs text-slate-400 font-medium">Cliques (CTR)</span>
+        <h4 id="kpi-clicks" class="text-xl font-black text-slate-200 mt-1">0 <span class="text-xs font-normal text-cyan-400" id="kpi-ctr">(0.0%)</span></h4>
+        <span class="text-[10px] text-slate-500">Tráfego qualificado</span>
+      </div>
+
+      <!-- CPM Médio -->
+      <div class="glass-panel p-4 rounded-xl border-slate-800">
+        <span class="text-xs text-slate-400 font-medium">CPM Médio</span>
+        <h4 id="kpi-cpm" class="text-xl font-black text-slate-200 mt-1">R$ 0,00</h4>
+        <span class="text-[10px] text-slate-500">Custo por mil</span>
+      </div>
+
+      <!-- Hook Rate Médio (3s) -->
+      <div class="glass-panel p-4 rounded-xl border-cyan-500/30 bg-cyan-950/10">
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-cyan-300 font-medium">Hook Rate (3s)</span>
+          <i data-lucide="eye" class="w-3.5 h-3.5 text-cyan-400"></i>
+        </div>
+        <h4 id="kpi-hook-rate" class="text-xl font-black text-cyan-400 mt-1">0.0%</h4>
+        <span class="text-[10px] text-cyan-300/70 font-semibold" id="kpi-hook-status">Meta Benchmark</span>
+      </div>
+
+      <!-- Hold Rate Médio -->
+      <div class="glass-panel p-4 rounded-xl border-emerald-500/30 bg-emerald-950/10">
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-emerald-300 font-medium">Hold Rate</span>
+          <i data-lucide="play-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+        </div>
+        <h4 id="kpi-hold-rate" class="text-xl font-black text-emerald-400 mt-1">0.0%</h4>
+        <span class="text-[10px] text-emerald-300/70 font-semibold">ThruPlay / 3s Views</span>
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- CURVA DE PRESSÃO DE LEILÃO (CPM TEMPORAL COM CHART.JS)        -->
+    <!-- ============================================================ -->
+    <section class="glass-panel p-6 rounded-2xl border-slate-800 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="trending-up" class="w-4 h-4 text-cyan-400"></i>
+            <span>Curva de CPM & Pressão de Leilão (Últimos 7 Dias)</span>
+          </h3>
+          <p class="text-xs text-slate-400">Acompanhamento de oscilação do custo por mil impressões para prevenir aumento de CPA.</p>
+        </div>
+        <span class="text-xs text-slate-500">Média da Conta: <strong class="text-slate-300" id="cpm-media-chart">R$ 15,40</strong></span>
+      </div>
+
+      <div class="h-64 w-full">
+        <canvas id="chart-cpm"></canvas>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- TABELA DE CRIATIVOS: HOOK RATE, HOLD RATE E FADIGA          -->
+    <!-- ============================================================ -->
+    <section class="glass-panel rounded-2xl border-slate-800 overflow-hidden">
+      <div class="p-6 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="film" class="w-4 h-4 text-indigo-400"></i>
+            <span>Desempenho Granular de Criativos & Diagnóstico de Fadiga</span>
+          </h3>
+          <p class="text-xs text-slate-400">Classificação individual de atração nos primeiros 3s e alertas automáticos de saturação.</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+          <span class="text-slate-400">Saudável</span>
+          <span class="w-2.5 h-2.5 rounded-full bg-rose-500 ml-2"></span>
+          <span class="text-slate-400">Fadigado (Freq &ge; 2.5)</span>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="border-b border-slate-800 bg-slate-900/80 text-slate-400 font-semibold">
+              <th class="py-3.5 px-4">Criativo</th>
+              <th class="py-3.5 px-3">Status</th>
+              <th class="py-3.5 px-3">Hook Rate (3s)</th>
+              <th class="py-3.5 px-3">Hold Rate</th>
+              <th class="py-3.5 px-3">Frequência</th>
+              <th class="py-3.5 px-3">CTR / CPC</th>
+              <th class="py-3.5 px-3">Diagnóstico Fadiga</th>
+              <th class="py-3.5 px-4 text-right">Ação</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-criativos-body" class="divide-y divide-slate-800/60">
+            <tr>
+              <td colspan="8" class="py-8 text-center text-slate-500">Carregando métricas dos criativos...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/js/gestor.js"></script>
+</body>
+</html>

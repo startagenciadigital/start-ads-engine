@@ -1,0 +1,29 @@
+{
+  "name": "meugestor",
+  "version": "1.0.0",
+  "description": "START ADS ENGINE - Plataforma de Tráfego Pago com IA (Meta Ads API + Google Gemini)",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "monitor": "node scripts/monolith-watcher.js",
+    "audit:ui": "node .agents/skills/ux_ui_auditor/scripts/audit_ux_ui.js"
+  },
+  "dependencies": {
+    "chokidar": "^5.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1"
+  },
+  "keywords": [
+    "meta-ads",
+    "traffic",
+    "gemini",
+    "marketing",
+    "ai"
+  ],
+  "author": "Start Agência Digital",
+  "license": "ISC"
+}

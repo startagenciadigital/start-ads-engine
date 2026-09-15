@@ -1,7 +1,6 @@
 /**
- * START ADS ENGINE - Meta Service
- * Integração com a Meta Marketing API (Graph API v20.0+)
- * Gerencia Contas, Campanhas, Conjuntos, Anúncios, Posts do Instagram e Ações.
+ * START ADS ENGINE - Meta Service (Dados Reais & Graph API v20.0+)
+ * Integração com a Meta Marketing API oficial para Contas, Métricas e Campanhas.
  */
 
 const analyticsEngine = require('./analyticsEngine');
@@ -11,91 +10,20 @@ const GRAPH_BASE_URL = `https://graph.facebook.com/${GRAPH_API_VERSION}`;
 const META_ACCESS_TOKEN = process.env.META_ADS_ACCESS_TOKEN || '';
 const DEFAULT_ACCOUNT_ID = process.env.META_ADS_AD_ACCOUNT_ID || 'act_1717085079153654';
 
-// Dados simulados realistas para ambiente local e demonstração instantânea
-const MOCK_CONTAS = [
-  {
-    id: DEFAULT_ACCOUNT_ID,
-    account_id: '1717085079153654',
-    name: 'Start Agência Digital - Principal',
-    account_status: 1, // 1 = ACTIVE
-    currency: 'BRL',
-    amount_spent: '14820.50',
-    balance: '0.00',
-    client_name: 'Start Agência Digital',
-    business_name: 'Start Digital Tech'
-  },
-  {
-    id: 'act_482910394857211',
-    account_id: '482910394857211',
-    name: 'E-commerce Bella Moda Brasil',
-    account_status: 1,
-    currency: 'BRL',
-    amount_spent: '29340.00',
-    balance: '0.00',
-    client_name: 'Bella Moda Confecções',
-    business_name: 'BM Varejo'
-  },
-  {
-    id: 'act_918237465928172',
-    account_id: '918237465928172',
-    name: 'Clínica Integrada Odonto & Saúde',
-    account_status: 1,
-    currency: 'BRL',
-    amount_spent: '8450.80',
-    balance: '0.00',
-    client_name: 'Clínica Odonto & Saúde',
-    business_name: 'Grupo Odonto Vida'
-  }
-];
+// Conta padrão do cliente (sem dados fictícios de outras empresas)
+const CONTA_PADRAO = {
+  id: DEFAULT_ACCOUNT_ID,
+  account_id: DEFAULT_ACCOUNT_ID.replace('act_', ''),
+  name: 'Start Agência Digital',
+  account_status: 1,
+  currency: 'BRL',
+  amount_spent: '0.00',
+  balance: '0.00',
+  client_name: 'Start Agência Digital',
+  business_name: 'Start Agência Digital'
+};
 
-const MOCK_POSTS_INSTAGRAM = [
-  {
-    id: '18029384759283741',
-    caption: '🚀 3 estratégias de tráfego pago que dobraram as vendas dos nossos clientes no último trimestre. Salve este post para consultar depois!',
-    media_type: 'VIDEO',
-    media_url: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600&auto=format&fit=crop&q=80',
-    thumbnail_url: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600&auto=format&fit=crop&q=80',
-    permalink: 'https://www.instagram.com/p/C9vXy8Z123',
-    timestamp: '2026-09-10T14:30:00Z',
-    like_count: 342,
-    comments_count: 48
-  },
-  {
-    id: '18029384759283742',
-    caption: '💡 Como estruturar uma campanha Advantage+ sem queimar verba em leilões caros. Confira o passo a passo completo no carrossel.',
-    media_type: 'CAROUSEL_ALBUM',
-    media_url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format&fit=crop&q=80',
-    thumbnail_url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format&fit=crop&q=80',
-    permalink: 'https://www.instagram.com/p/C9vXy8Z456',
-    timestamp: '2026-09-08T18:00:00Z',
-    like_count: 512,
-    comments_count: 67
-  },
-  {
-    id: '18029384759283743',
-    caption: '🔥 Bastidores de gravação de criativos de alta retenção (Hook Rate > 35%). Você sabe prender a atenção nos primeiros 3 segundos?',
-    media_type: 'VIDEO',
-    media_url: 'https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=600&auto=format&fit=crop&q=80',
-    thumbnail_url: 'https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=600&auto=format&fit=crop&q=80',
-    permalink: 'https://www.instagram.com/p/C9vXy8Z789',
-    timestamp: '2026-09-05T11:15:00Z',
-    like_count: 829,
-    comments_count: 114
-  },
-  {
-    id: '18029384759283744',
-    caption: '🎯 Pare de depender de indicações aleatórias. Construa um funil previsível de captação de clientes qualificados com Meta Ads.',
-    media_type: 'IMAGE',
-    media_url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600&auto=format&fit=crop&q=80',
-    thumbnail_url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600&auto=format&fit=crop&q=80',
-    permalink: 'https://www.instagram.com/p/C9vXy8Z012',
-    timestamp: '2026-09-02T16:45:00Z',
-    like_count: 275,
-    comments_count: 32
-  }
-];
-
-// Estado volátil em memória para demonstrar alterações em tempo real (pausar, orçamentos, novas campanhas)
+// Campanhas criadas nesta sessão
 let campanhasCriadas = [];
 let statusOverrides = {};
 let orcamentoOverrides = {};
@@ -104,7 +32,7 @@ let orcamentoOverrides = {};
  * Utilitário para chamadas à Graph API com tratamento de erros
  */
 async function callGraphAPI(endpoint, options = {}) {
-  if (!META_ACCESS_TOKEN || META_ACCESS_TOKEN.includes('seu_meta')) {
+  if (!META_ACCESS_TOKEN || META_ACCESS_TOKEN.includes('seu_meta') || META_ACCESS_TOKEN.trim() === '') {
     return null;
   }
 
@@ -116,7 +44,7 @@ async function callGraphAPI(endpoint, options = {}) {
     const response = await fetch(fullUrl, options);
     const json = await response.json();
     if (!response.ok || json.error) {
-      console.warn(`[Meta Graph API] Erro:`, json.error || json);
+      console.warn(`[Meta Graph API] Resposta (${response.status}):`, json.error?.message || json);
       return null;
     }
     return json;
@@ -143,7 +71,7 @@ async function listarContas() {
       client_name: acc.name.replace(/^(Conta|Start|Agência)\s*[-:]\s*/i, '').trim() || acc.name
     }));
   }
-  return MOCK_CONTAS;
+  return [CONTA_PADRAO];
 }
 
 /**
@@ -165,7 +93,7 @@ async function buscarPostsInstagram(pageId) {
       comments_count: p.comments_count || 0
     }));
   }
-  return MOCK_POSTS_INSTAGRAM;
+  return []; // Lista limpa sem posts fictícios
 }
 
 /**
@@ -173,128 +101,92 @@ async function buscarPostsInstagram(pageId) {
  */
 async function obterMetricasConta(contaId) {
   const targetContaId = contaId || DEFAULT_ACCOUNT_ID;
-  const conta = MOCK_CONTAS.find(c => c.id === targetContaId) || MOCK_CONTAS[0];
+  const conta = CONTA_PADRAO;
 
-  // Anúncios com métricas enriquecidas
-  const baseAds = [
-    {
-      id: 'ad_video_gancho_01',
-      name: 'Reels - Gancho 3 Segundos Ouro',
-      status: statusOverrides['ad_video_gancho_01'] || 'ACTIVE',
-      creative_type: 'VIDEO',
-      thumbnail_url: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600&auto=format&fit=crop&q=80',
-      impressions: 48200,
-      clicks: 1420,
-      spend: 780.40,
-      ctr: 2.94,
-      ctr_baseline: 2.70,
-      cpc: 0.55,
-      cpc_baseline: 0.58,
-      frequency: 1.4,
-      video_3s_views: 18450, // Hook Rate = 38.2% (Excelente)
-      thruplays: 7200         // Hold Rate = 39.0% (Excelente)
-    },
-    {
-      id: 'ad_video_oferta_fadigado',
-      name: 'Vídeo Institucional Antigo - Oferta V1',
-      status: statusOverrides['ad_video_oferta_fadigado'] || 'ACTIVE',
-      creative_type: 'VIDEO',
-      thumbnail_url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600&auto=format&fit=crop&q=80',
-      impressions: 92400,
-      clicks: 860,
-      spend: 1450.00,
-      ctr: 0.93,
-      ctr_baseline: 1.65, // Queda de ~43% no CTR
-      cpc: 1.68,
-      cpc_baseline: 0.95,
-      frequency: 2.9,     // Frequência >= 2.5 -> FADIGADO
-      video_3s_views: 14200, // Hook Rate = 15.3% (Médio/Baixo)
-      thruplays: 1800        // Hold Rate = 12.6%
-    },
-    {
-      id: 'ad_carrossel_autoridade',
-      name: 'Carrossel 5 Passos de Sucesso',
-      status: statusOverrides['ad_carrossel_autoridade'] || 'ACTIVE',
-      creative_type: 'CAROUSEL',
-      thumbnail_url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format&fit=crop&q=80',
-      impressions: 34100,
-      clicks: 980,
-      spend: 520.10,
-      ctr: 2.87,
-      ctr_baseline: 2.90,
-      cpc: 0.53,
-      cpc_baseline: 0.52,
-      frequency: 1.6,
-      video_3s_views: 0,
-      thruplays: 0
-    },
-    {
-      id: 'ad_reels_bastidores',
-      name: 'Reels - Bastidores & Rotina',
-      status: statusOverrides['ad_reels_bastidores'] || 'ACTIVE',
-      creative_type: 'VIDEO',
-      thumbnail_url: 'https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=600&auto=format&fit=crop&q=80',
-      impressions: 29500,
-      clicks: 740,
-      spend: 410.80,
-      ctr: 2.51,
-      ctr_baseline: 2.45,
-      cpc: 0.56,
-      cpc_baseline: 0.55,
-      frequency: 1.3,
-      video_3s_views: 8900,  // Hook Rate = 30.1% (Bom)
-      thruplays: 2850        // Hold Rate = 32.0% (Bom)
+  let baseAds = [];
+  let insightsConta = null;
+
+  // Se houver token configurado, busca dados reais da Graph API
+  if (META_ACCESS_TOKEN && !META_ACCESS_TOKEN.includes('seu_meta')) {
+    try {
+      // 1. Insights da Conta
+      const insightsData = await callGraphAPI(`${targetContaId}/insights?date_preset=last_30d&fields=spend,impressions,clicks,cpc,cpm,ctr,reach,frequency`);
+      if (insightsData && insightsData.data && insightsData.data[0]) {
+        insightsConta = insightsData.data[0];
+      }
+
+      // 2. Anúncios da Conta
+      const adsData = await callGraphAPI(`${targetContaId}/ads?fields=id,name,status,creative{thumbnail_url,image_url},insights.date_preset(last_30d){spend,impressions,clicks,cpc,cpm,ctr,frequency,video_3s_views,video_thruplay_watched_actions}&limit=25`);
+      if (adsData && adsData.data && adsData.data.length > 0) {
+        baseAds = adsData.data.map(ad => {
+          const ins = ad.insights?.data?.[0] || {};
+          const v3s = ins.video_3s_views?.[0]?.value || 0;
+          const thru = ins.video_thruplay_watched_actions?.[0]?.value || 0;
+
+          return {
+            id: ad.id,
+            name: ad.name,
+            status: statusOverrides[ad.id] || ad.status || 'PAUSED',
+            creative_type: 'VIDEO',
+            thumbnail_url: ad.creative?.thumbnail_url || ad.creative?.image_url || '',
+            impressions: Number(ins.impressions || 0),
+            clicks: Number(ins.clicks || 0),
+            spend: Number(ins.spend || 0),
+            ctr: Number(ins.ctr || 0),
+            cpc: Number(ins.cpc || 0),
+            frequency: Number(ins.frequency || 1.0),
+            video_3s_views: Number(v3s),
+            thruplays: Number(thru)
+          };
+        });
+      }
+    } catch (e) {
+      console.warn('[Meta Service] Falha ao consultar insights ao vivo:', e.message);
     }
-  ];
+  }
 
-  // Adiciona campanhas recém criadas pelo wizard se houverem
+  // Adiciona campanhas criadas na sessão
   campanhasCriadas.forEach((nova, idx) => {
     baseAds.unshift({
       id: nova.ad_id || `ad_nova_${idx}`,
-      name: nova.name || `Campanha Nova ${idx + 1}`,
-      status: nova.status || 'PAUSED',
+      name: nova.name || `Campanha ${idx + 1}`,
+      status: statusOverrides[nova.ad_id] || nova.status || 'PAUSED',
       creative_type: nova.creative_mode === 'EXISTING_POST' ? 'POST_INSTAGRAM' : 'IMAGE',
-      thumbnail_url: nova.media_url || 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600&auto=format&fit=crop&q=80',
-      impressions: 1200,
-      clicks: 58,
-      spend: 34.50,
-      ctr: 4.83,
-      ctr_baseline: 4.80,
-      cpc: 0.59,
-      cpc_baseline: 0.60,
-      frequency: 1.05,
-      video_3s_views: 480,
-      thruplays: 190
+      thumbnail_url: nova.media_url || '',
+      impressions: 0,
+      clicks: 0,
+      spend: 0,
+      ctr: 0,
+      cpc: 0,
+      frequency: 1.0,
+      video_3s_views: 0,
+      thruplays: 0
     });
   });
 
-  // Enriquece anúncios com Hook Rate, Hold Rate e Fadiga
+  // Enriquece com Hook Rate, Hold Rate e cálculo de fadiga
   const anunciosProcessados = analyticsEngine.enriquecerMetricasCriativos(baseAds);
 
-  // Calcula totais consolidados
-  const totalSpend = anunciosProcessados.reduce((acc, a) => acc + (a.spend || 0), 0);
-  const totalImpressions = anunciosProcessados.reduce((acc, a) => acc + (a.impressions || 0), 0);
-  const totalClicks = anunciosProcessados.reduce((acc, a) => acc + (a.clicks || 0), 0);
+  // Consolidação de métricas
+  const totalSpend = insightsConta ? Number(insightsConta.spend || 0) : anunciosProcessados.reduce((acc, a) => acc + (a.spend || 0), 0);
+  const totalImpressions = insightsConta ? Number(insightsConta.impressions || 0) : anunciosProcessados.reduce((acc, a) => acc + (a.impressions || 0), 0);
+  const totalClicks = insightsConta ? Number(insightsConta.clicks || 0) : anunciosProcessados.reduce((acc, a) => acc + (a.clicks || 0), 0);
+  const totalReach = insightsConta ? Number(insightsConta.reach || 0) : Math.round(totalImpressions * 0.72);
+  const avgCTR = insightsConta ? Number(insightsConta.ctr || 0) : (totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0);
+  const avgCPC = insightsConta ? Number(insightsConta.cpc || 0) : (totalClicks > 0 ? totalSpend / totalClicks : 0);
+  const avgCPM = insightsConta ? Number(insightsConta.cpm || 0) : (totalImpressions > 0 ? (totalSpend / totalImpressions) * 1000 : 0);
+
   const totalVideo3s = anunciosProcessados.reduce((acc, a) => acc + (a.video_3s_views || 0), 0);
   const totalThruplays = anunciosProcessados.reduce((acc, a) => acc + (a.thruplays || 0), 0);
-
-  const avgCTR = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
-  const avgCPC = totalClicks > 0 ? totalSpend / totalClicks : 0;
-  const avgCPM = totalImpressions > 0 ? (totalSpend / totalImpressions) * 1000 : 0;
   const avgHookRate = totalImpressions > 0 ? (totalVideo3s / totalImpressions) * 100 : 0;
   const avgHoldRate = totalVideo3s > 0 ? (totalThruplays / totalVideo3s) * 100 : 0;
 
-  const anunciosFadigados = anunciosProcessados.filter(a => a.analise_fadiga.fadigado && a.status === 'ACTIVE');
+  const anunciosFadigados = anunciosProcessados.filter(a => a.analise_fadiga?.fadigado && a.status === 'ACTIVE');
 
-  // Histórico temporal dos últimos 7 dias para curva de CPM
+  // Curva de CPM real ou zerada
+  const hojeStr = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
   const historicoDias = [
-    { data: '08/09', cpm: 12.40, impressions: 26000 },
-    { data: '09/09', cpm: 13.10, impressions: 29500 },
-    { data: '10/09', cpm: 12.80, impressions: 32000 },
-    { data: '11/09', cpm: 14.50, impressions: 34000 },
-    { data: '12/09', cpm: 16.20, impressions: 38500 },
-    { data: '13/09', cpm: 15.90, impressions: 41200 },
-    { data: '14/09', cpm: Number(avgCPM.toFixed(2)), impressions: 43500 }
+    { data: hojeStr, cpm: Number(avgCPM.toFixed(2)), impressions: totalImpressions }
   ];
 
   const curvaCPM = analyticsEngine.processarCurvaCPM(historicoDias);
@@ -310,13 +202,13 @@ async function obterMetricasConta(contaId) {
       spend: Number(totalSpend.toFixed(2)),
       impressions: totalImpressions,
       clicks: totalClicks,
-      reach: Math.round(totalImpressions * 0.72),
+      reach: totalReach,
       ctr: Number(avgCTR.toFixed(2)),
       cpc: Number(avgCPC.toFixed(2)),
       cpm: Number(avgCPM.toFixed(2)),
       hook_rate_medio: Number(avgHookRate.toFixed(2)),
       hold_rate_medio: Number(avgHoldRate.toFixed(2)),
-      frequencia_media: 1.8
+      frequencia_media: insightsConta ? Number(insightsConta.frequency || 1.0) : 1.0
     },
     curva_cpm: curvaCPM,
     anuncios: anunciosProcessados,
@@ -332,9 +224,8 @@ async function criarCampanhaCompleta(dados, arquivoMidia) {
   const statusSeguranca = (dados.safety_status || 'PAUSED').toUpperCase();
   const nomeCampanha = dados.campaign_name || `[START ADS] ${dados.objective || 'VENDAS'} - ${new Date().toLocaleDateString('pt-BR')}`;
 
-  console.log(`[Meta Service] Iniciando criação de campanha "${nomeCampanha}" para a conta ${accountId} com status ${statusSeguranca}`);
+  console.log(`[Meta Service] Criando campanha "${nomeCampanha}" para conta ${accountId} com status ${statusSeguranca}`);
 
-  // Se houver arquivo enviado pelo multer, gerar URL local/remota
   let mediaUrl = dados.media_url || '';
   if (arquivoMidia) {
     mediaUrl = `/uploads/${arquivoMidia.filename}`;
@@ -342,9 +233,9 @@ async function criarCampanhaCompleta(dados, arquivoMidia) {
     mediaUrl = dados.selected_post_thumbnail;
   }
 
-  // Tenta Graph API oficial se o token estiver configurado
   let realMetaIds = {};
-  if (META_ACCESS_TOKEN && !META_ACCESS_TOKEN.includes('seu_meta')) {
+
+  if (META_ACCESS_TOKEN && !META_ACCESS_TOKEN.includes('seu_meta') && META_ACCESS_TOKEN.trim() !== '') {
     try {
       // 1. Criar Campanha
       const campaignPayload = {
@@ -365,16 +256,15 @@ async function criarCampanhaCompleta(dados, arquivoMidia) {
 
       if (campRes && campRes.id) {
         realMetaIds.campaign_id = campRes.id;
-        console.log(`[Meta API] 1/3 Campanha criada com ID: ${campRes.id}`);
+        console.log(`[Meta API] Campanha criada: ${campRes.id}`);
 
-        // Mapeia metas de otimização
         let optGoal = 'LINK_CLICKS';
         if (dados.objective === 'OUTCOME_SALES') optGoal = 'OFFSITE_CONVERSIONS';
         else if (dados.objective === 'OUTCOME_LEADS') optGoal = 'LEAD_GENERATION';
         else if (dados.objective === 'OUTCOME_ENGAGEMENT') optGoal = 'POST_ENGAGEMENT';
         else if (dados.objective === 'OUTCOME_AWARENESS') optGoal = 'REACH';
 
-        // 2. Criar Conjunto de Anúncios (AdSet)
+        // 2. Criar AdSet
         const adsetPayload = {
           name: `${nomeCampanha} - Conjunto Principal`,
           campaign_id: campRes.id,
@@ -403,9 +293,9 @@ async function criarCampanhaCompleta(dados, arquivoMidia) {
 
         if (adsetRes && adsetRes.id) {
           realMetaIds.adset_id = adsetRes.id;
-          console.log(`[Meta API] 2/3 Conjunto de Anúncios criado com ID: ${adsetRes.id}`);
+          console.log(`[Meta API] AdSet criado: ${adsetRes.id}`);
 
-          // 3. Criar Ad Creative & Ad
+          // 3. Criar Creative & Ad
           const creativePayload = {
             name: `${nomeCampanha} - Criativo 01`
           };
@@ -430,21 +320,20 @@ async function criarCampanhaCompleta(dados, arquivoMidia) {
             body: JSON.stringify(creativePayload)
           });
 
-          const creativeId = creativeRes?.id;
-          if (creativeId) {
+          if (creativeRes?.id) {
             const adRes = await callGraphAPI(`${accountId}/ads`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 name: `${nomeCampanha} - Anúncio Oficial`,
                 adset_id: adsetRes.id,
-                creative: { creative_id: creativeId },
+                creative: { creative_id: creativeRes.id },
                 status: statusSeguranca
               })
             });
-            if (adRes && adRes.id) {
+            if (adRes?.id) {
               realMetaIds.ad_id = adRes.id;
-              console.log(`[Meta API] 3/3 Anúncio oficial publicado na Meta com ID: ${adRes.id}`);
+              console.log(`[Meta API] Anúncio publicado: ${adRes.id}`);
             }
           }
         }
@@ -454,7 +343,6 @@ async function criarCampanhaCompleta(dados, arquivoMidia) {
     }
   }
 
-  // Registra no estado volátil para aparecer imediatamente no Gestor e no Cliente
   const novoRegistro = {
     campaign_id: realMetaIds.campaign_id || `cmp_${Date.now()}`,
     adset_id: realMetaIds.adset_id || `adset_${Date.now()}`,
@@ -484,13 +372,13 @@ async function criarCampanhaCompleta(dados, arquivoMidia) {
 }
 
 /**
- * 5. Ações Rápidas do Co-Piloto (Human-in-the-Loop)
+ * 5. Ações Rápidas do Co-Piloto
  */
 async function pausarAtivarAnuncio(adId, novoStatus) {
   statusOverrides[adId] = novoStatus;
-  console.log(`[Meta Service] Anúncio ${adId} alterado para ${novoStatus}`);
+  console.log(`[Meta Service] Anúncio ${adId} -> ${novoStatus}`);
 
-  if (META_ACCESS_TOKEN && !META_ACCESS_TOKEN.includes('seu_meta')) {
+  if (META_ACCESS_TOKEN && !META_ACCESS_TOKEN.includes('seu_meta') && META_ACCESS_TOKEN.trim() !== '') {
     await callGraphAPI(adId, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -502,19 +390,17 @@ async function pausarAtivarAnuncio(adId, novoStatus) {
     sucesso: true,
     ad_id: adId,
     novo_status: novoStatus,
-    mensagem: `Criativo ${adId} foi ${novoStatus === 'PAUSED' ? 'pausado com sucesso' : 'reativado'}.`
+    mensagem: `Criativo ${adId} foi alterado para ${novoStatus}.`
   };
 }
 
 async function ajustarOrcamento(targetId, novoValor) {
   orcamentoOverrides[targetId] = novoValor;
-  console.log(`[Meta Service] Orçamento de ${targetId} ajustado para R$ ${novoValor}`);
-
   return {
     sucesso: true,
     target_id: targetId,
     novo_orcamento: novoValor,
-    mensagem: `Orçamento ajustado com sucesso para R$ ${Number(novoValor).toFixed(2)}/dia.`
+    mensagem: `Orçamento ajustado para R$ ${Number(novoValor).toFixed(2)}/dia.`
   };
 }
 

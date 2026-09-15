@@ -212,23 +212,47 @@ Retorne um objeto JSON com:
     };
   }
 
+  const gasto = Number(dadosConta.spend || 0);
+
+  if (gasto === 0) {
+    return {
+      tem_anomalia: false,
+      severidade: "OTIMIZACAO",
+      titulo: "Co-Piloto Conectado e Pronto para Monitoramento",
+      diagnostico_detalhado: "Nenhuma anomalia detectada. O Co-Piloto está a postos para monitorar o leilão e os criativos em tempo real assim que a primeira campanha iniciar a veiculação.",
+      acao_proposta: {
+        tipo: "CREATE_CAMPAIGN",
+        rotulo_botao: "Criar Nova Campanha",
+        target_id: "nova_campanha",
+        target_name: "Criador Universal",
+        descricao_impacto: "Acesse o criador universal para publicar seus primeiros anúncios na Meta.",
+        payload: {}
+      },
+      kpis_resumo: {
+        cpm_status: "Aguardando Leilão",
+        hook_rate_medio: "Aguardando Vídeos",
+        fadiga_status: "Sem Anomalias"
+      }
+    };
+  }
+
   return {
     tem_anomalia: false,
     severidade: "OTIMIZACAO",
-    titulo: "Campanhas Operando com Alta Eficiência",
-    diagnostico_detalhado: "Nenhum criativo atingiu índice de fadiga crítico. O CPM médio está sob controle e os criativos principais mantém Hook Rate acima de 25%.",
+    titulo: "Campanhas Operando com Eficiência",
+    diagnostico_detalhado: "Nenhum criativo atingiu índice de fadiga crítico. O CPM médio está estável e os anúncios mantém bom desempenho de retenção.",
     acao_proposta: {
       tipo: "ADJUST_BUDGET",
-      rotulo_botao: "Aumentar Orçamento do Melhor Conjunto (+15%)",
-      target_id: "adset_scale_01",
-      target_name: "Conjunto Principal de Escala",
-      descricao_impacto: "Escalar orçamento diário de forma segura sem reiniciar a fase de aprendizado.",
-      payload: { adset_id: "adset_scale_01", percentual: 15 }
+      rotulo_botao: "Manter Estrutura Atual",
+      target_id: "status_ok",
+      target_name: "Conjuntos Saudáveis",
+      descricao_impacto: "Manter orçamento atual para consolidação da fase de aprendizado da Meta.",
+      payload: {}
     },
     kpis_resumo: {
-      cpm_status: "Normal (R$ 14,20)",
-      hook_rate_medio: `${dadosConta.hook_rate_medio || 28.5}% (Ótimo)`,
-      fadiga_status: "Todos os Criativos Saudáveis"
+      cpm_status: `CPM Médio: R$ ${Number(dadosConta.cpm || 0).toFixed(2)}`,
+      hook_rate_medio: `${dadosConta.hook_rate_medio || 0}%`,
+      fadiga_status: "Criativos Saudáveis"
     }
   };
 }
@@ -261,22 +285,46 @@ Retorne um JSON com:
   const aiResult = await callGeminiJSON(prompt, systemInstruction);
   if (aiResult) return aiResult;
 
-  // Fallback amigável
+  // Fallback amigável com métricas reais
+  const gasto = Number(dadosConta.spend || 0);
+  const alcance = Number(dadosConta.reach || 0);
+  const cliques = Number(dadosConta.clicks || 0);
+  const cpc = Number(dadosConta.cpc || 0);
+
+  if (gasto === 0 && alcance === 0) {
+    return {
+      saudacao: `Olá, equipe ${nomeCliente}! Bem-vindos ao painel de transparência da sua conta de anúncios.`,
+      destaque_principal: `Sua conta está conectada e pronta para o início das primeiras veiculações.`,
+      paragrafo_desempenho: `Assim que as primeiras campanhas forem publicadas e começarem a rodar na Meta, nosso sistema consolidará em tempo real o volume de pessoas alcançadas, custos por resultado e os vídeos com maior retenção de público.`,
+      pontos_positivos: [
+        `Configuração técnica de conta concluída com sucesso.`,
+        `Integração direta com o ecossistema Meta Marketing API ativa.`,
+        `Monitoramento de Hook Rate e retenção de criativos pronto para ativação.`
+      ],
+      proximos_passos: [
+        `Publicar a primeira campanha estratégica no criador universal.`,
+        `Iniciar a coleta dos primeiros dados de leilão e aprendizado.`,
+        `Acompanhar os relatórios de conversão e custo por lead.`
+      ],
+      parecer_final: `A estrutura de marketing está pronta. Nossa equipe está a postos para acompanhar a primeira entrega de resultados.`
+    };
+  }
+
   return {
-    saudacao: `Olá, equipe ${nomeCliente}! Apresentamos o panorama mensal consolidado dos seus investimentos em tráfego pago.`,
-    destaque_principal: `Suas campanhas alcançaram ${dadosConta.reach ? Number(dadosConta.reach).toLocaleString('pt-BR') : '45.200'} pessoas qualificadas com um retorno sólido sobre o investimento.`,
-    paragrafo_desempenho: `Neste ciclo, priorizamos anúncios dinâmicos de vídeo e criativos de alta retenção no Instagram e Facebook. O custo por engajamento manteve-se muito competitivo (média de R$ ${dadosConta.cpc || '0,88'} por clique qualificado), garantindo que cada real investido gerasse impacto direto na lembrança da sua marca e na geração de novas oportunidades comerciais.`,
+    saudacao: `Olá, equipe ${nomeCliente}! Apresentamos o panorama consolidado dos seus investimentos em tráfego pago.`,
+    destaque_principal: `Suas campanhas alcançaram ${alcance.toLocaleString('pt-BR')} pessoas com investimento total de R$ ${gasto.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}.`,
+    paragrafo_desempenho: `Neste período, foram geradas ${cliques.toLocaleString('pt-BR')} visitas e engajamentos qualificados com um custo médio de R$ ${cpc.toFixed(2)} por resultado. Os anúncios continuam sendo otimizados para maximizar o retorno da sua marca.`,
     pontos_positivos: [
-      `Crescimento expressivo no volume de visualizações completas dos vídeos institucionais.`,
-      `Excelente índice de retenção nos primeiros 3 segundos de vídeo (Hook Rate superior à média do mercado).`,
-      `Estabilidade no custo de aquisição mesmo com a flutuação sazonal dos leilões.`
+      `Entrega consistente dentro do planejamento orçamentário.`,
+      `Públicos segmentados respondendo com interações positivas.`,
+      `Estabilidade nos custos médios por clique.`
     ],
     proximos_passos: [
-      `Testar novos formatos de criativos em formato Reels vertical.`,
-      `Refinar a lista de públicos semelhantes (Lookalike) com base nos clientes mais recentes.`,
-      `Intensificar a verba nos dias e horários de maior pico de conversão.`
+      `Testar novas variações de criativos de vídeo.`,
+      `Escalar os conjuntos com melhor desempenho de conversão.`,
+      `Manter calibração de horários e posicionamentos.`
     ],
-    parecer_final: `A conta de anúncios mantém excelente saúde técnica e financeira. Nossa equipe segue calibrando diariamente cada conjunto para maximizar seu retorno.`
+    parecer_final: `A conta de anúncios opera com saúde técnica e financeira sob gestão contínua.`
   };
 }
 

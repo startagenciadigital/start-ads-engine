@@ -343,6 +343,7 @@ async function criarCampanhaCompleta(dados, arquivoMidia) {
   }
 
   // Tenta Graph API oficial se o token estiver configurado
+  let realMetaIds = {};
   if (META_ACCESS_TOKEN && !META_ACCESS_TOKEN.includes('seu_meta')) {
     try {
       // 1. Criar Campanha
@@ -363,19 +364,101 @@ async function criarCampanhaCompleta(dados, arquivoMidia) {
       });
 
       if (campRes && campRes.id) {
-        console.log(`[Meta API] Campanha criada com ID: ${campRes.id}`);
-        // 2. Criar Conjunto de Anúncios e 3. Criar Ad...
+        realMetaIds.campaign_id = campRes.id;
+        console.log(`[Meta API] 1/3 Campanha criada com ID: ${campRes.id}`);
+
+        // Mapeia metas de otimização
+        let optGoal = 'LINK_CLICKS';
+        if (dados.objective === 'OUTCOME_SALES') optGoal = 'OFFSITE_CONVERSIONS';
+        else if (dados.objective === 'OUTCOME_LEADS') optGoal = 'LEAD_GENERATION';
+        else if (dados.objective === 'OUTCOME_ENGAGEMENT') optGoal = 'POST_ENGAGEMENT';
+        else if (dados.objective === 'OUTCOME_AWARENESS') optGoal = 'REACH';
+
+        // 2. Criar Conjunto de Anúncios (AdSet)
+        const adsetPayload = {
+          name: `${nomeCampanha} - Conjunto Principal`,
+          campaign_id: campRes.id,
+          billing_event: 'IMPRESSIONS',
+          optimization_goal: optGoal,
+          status: statusSeguranca,
+          targeting: {
+            geo_locations: { countries: ['BR'] },
+            age_min: Number(dados.age_min || 18),
+            age_max: Number(dados.age_max || 65)
+          }
+        };
+
+        if (dados.budget_type !== 'CBO') {
+          adsetPayload.daily_budget = Math.round(Number(dados.budget_amount || 50) * 100);
+        }
+        if (dados.start_time) {
+          adsetPayload.start_time = new Date(dados.start_time).toISOString();
+        }
+
+        const adsetRes = await callGraphAPI(`${accountId}/adsets`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(adsetPayload)
+        });
+
+        if (adsetRes && adsetRes.id) {
+          realMetaIds.adset_id = adsetRes.id;
+          console.log(`[Meta API] 2/3 Conjunto de Anúncios criado com ID: ${adsetRes.id}`);
+
+          // 3. Criar Ad Creative & Ad
+          const creativePayload = {
+            name: `${nomeCampanha} - Criativo 01`
+          };
+
+          if (dados.creative_mode === 'EXISTING_POST' && dados.selected_post_id) {
+            creativePayload.object_story_id = dados.selected_post_id;
+          } else {
+            creativePayload.object_story_spec = {
+              page_id: dados.page_id || accountId.replace('act_', ''),
+              link_data: {
+                link: dados.destination_url || 'https://startagenciadigital.com.br',
+                message: dados.primary_text || '',
+                name: dados.headline || '',
+                call_to_action: { type: dados.call_to_action || 'LEARN_MORE' }
+              }
+            };
+          }
+
+          const creativeRes = await callGraphAPI(`${accountId}/adcreatives`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(creativePayload)
+          });
+
+          const creativeId = creativeRes?.id;
+          if (creativeId) {
+            const adRes = await callGraphAPI(`${accountId}/ads`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: `${nomeCampanha} - Anúncio Oficial`,
+                adset_id: adsetRes.id,
+                creative: { creative_id: creativeId },
+                status: statusSeguranca
+              })
+            });
+            if (adRes && adRes.id) {
+              realMetaIds.ad_id = adRes.id;
+              console.log(`[Meta API] 3/3 Anúncio oficial publicado na Meta com ID: ${adRes.id}`);
+            }
+          }
+        }
       }
     } catch (e) {
-      console.warn(`[Meta API] Erro na criação oficial, utilizando registro local:`, e.message);
+      console.warn(`[Meta API] Exceção na chamada Graph API oficial:`, e.message);
     }
   }
 
   // Registra no estado volátil para aparecer imediatamente no Gestor e no Cliente
   const novoRegistro = {
-    campaign_id: `cmp_${Date.now()}`,
-    adset_id: `adset_${Date.now()}`,
-    ad_id: `ad_${Date.now()}`,
+    campaign_id: realMetaIds.campaign_id || `cmp_${Date.now()}`,
+    adset_id: realMetaIds.adset_id || `adset_${Date.now()}`,
+    ad_id: realMetaIds.ad_id || `ad_${Date.now()}`,
     name: nomeCampanha,
     objective: dados.objective,
     status: statusSeguranca,

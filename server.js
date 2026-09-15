@@ -22,6 +22,8 @@ app.use('/api/pre-voo-ia', require('./api/pre-voo-ia'));
 app.use('/api/metricas', require('./api/metricas'));
 app.use('/api/analise-ia', require('./api/analise-ia'));
 app.use('/api/executar-acao', require('./api/executar-acao'));
+app.use('/api/auth-pin', require('./api/auth-pin'));
+app.use('/api/gestao-pin', require('./api/gestao-pin'));
 
 // Rotas amigáveis para as páginas da aplicação
 app.get('/criar', (req, res) => {

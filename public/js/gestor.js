@@ -48,6 +48,9 @@ function trocarConta(novaContaId) {
   contaAtualId = novaContaId;
   const linkCliente = document.getElementById('link-portal-cliente');
   if (linkCliente) linkCliente.href = `/cliente?conta=${novaContaId}`;
+  if (typeof carregarPinContaGestor === 'function') {
+    carregarPinContaGestor(novaContaId);
+  }
   carregarDadosDashboard();
 }
 

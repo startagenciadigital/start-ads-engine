@@ -11,6 +11,8 @@
     "audit:ui": "node .agents/skills/ux_ui_auditor/scripts/audit_ux_ui.js"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.116.0",
     "chokidar": "^5.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",

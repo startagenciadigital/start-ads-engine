@@ -29,6 +29,10 @@
       </div>
 
       <div class="flex items-center gap-3">
+        <button id="btn-sair-pin" onclick="bloquearSessaoCliente()" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all hidden">
+          <i data-lucide="lock" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>Bloquear</span>
+        </button>
         <button onclick="window.print()" class="px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-2 transition-all">
           <i data-lucide="printer" class="w-3.5 h-3.5 text-cyan-400"></i>
           <span>Imprimir / Salvar PDF</span>
@@ -41,8 +45,48 @@
     </div>
   </header>
 
-  <!-- Conteúdo Principal -->
-  <main class="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-8">
+  <!-- ============================================================ -->
+  <!-- MODAL / TELA DE BLOQUEIO POR PIN (CLIENTE)                   -->
+  <!-- ============================================================ -->
+  <div id="modal-bloqueio-pin" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-xl flex items-center justify-center p-4">
+    <div class="glass-panel max-w-md w-full rounded-2xl p-8 space-y-6 border-indigo-500/40 text-center shadow-2xl relative">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 via-cyan-500 to-emerald-400 p-[2px] mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/30">
+        <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
+          <i data-lucide="key-round" class="w-8 h-8 text-cyan-400"></i>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-2xl font-black text-white tracking-tight">Portal do Cliente</h2>
+        <p class="text-xs text-slate-400 mt-1">Acesso protegido com autenticação via PIN de segurança da agência.</p>
+      </div>
+
+      <form id="form-auth-pin" onsubmit="event.preventDefault(); validarPinForm();" class="space-y-4">
+        <div>
+          <label for="input-pin-cliente" class="block text-xs font-semibold text-slate-300 mb-2">Digite o seu PIN (4 a 6 dígitos):</label>
+          <input type="password" id="input-pin-cliente" inputmode="numeric" maxlength="6" autofocus placeholder="••••" class="w-full text-center tracking-[0.4em] text-2xl font-bold bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:outline-none placeholder:tracking-normal placeholder:text-sm">
+        </div>
+
+        <div id="pin-erro-mensagem" class="hidden p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-medium flex items-center justify-center gap-1.5">
+          <i data-lucide="alert-circle" class="w-4 h-4 text-rose-400"></i>
+          <span id="pin-erro-texto">PIN incorreto. Tente novamente.</span>
+        </div>
+
+        <button type="submit" id="btn-desbloquear-pin" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-indigo-600/30">
+          <i data-lucide="unlock" class="w-4 h-4"></i>
+          <span>Desbloquear Acesso</span>
+        </button>
+      </form>
+
+      <div class="pt-4 border-t border-slate-800 text-[11px] text-slate-500 flex items-center justify-center gap-2">
+        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+        <span>Sessão protegida por 24 horas • Start Agência Digital</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conteúdo Principal (Visível apenas após desbloqueio) -->
+  <main id="conteudo-portal-cliente" class="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-8 hidden">
     
     <!-- Topo: Informações do Cliente & Ciclo de Gestão -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800 print:border-black">

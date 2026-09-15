@@ -31,6 +31,9 @@ O **START ADS ENGINE** é uma plataforma concebida para potencializar a gestão 
 - `GET /api/metricas/:contaId`: Métricas consolidadas, histórico de CPM e criativos enriquecidos com índice de fadiga.
 - `GET/POST /api/analise-ia/:contaId`: Diagnóstico do Co-Piloto (tipo `COPILOTO`) ou Resumo Executivo para cliente (tipo `CLIENTE`).
 - `POST /api/executar-acao`: Aplicação em 1 clique de ações recomendadas pela IA (`PAUSE_AD`, `ACTIVATE_AD`, `ADJUST_BUDGET`).
+- `POST /api/auth-pin`: Validação do PIN de 4 a 6 dígitos do cliente com geração de sessão segura de 24h.
+- `GET /api/gestao-pin/:contaId`: Consulta do PIN ativo da conta pelo gestor.
+- `POST /api/gestao-pin`: Atualização do PIN da conta no Supabase pelo gestor.
 
 ---
 
@@ -38,6 +41,7 @@ O **START ADS ENGINE** é uma plataforma concebida para potencializar a gestão 
 - `services/metaService.js`: Gerenciamento das chamadas à Graph API v20+ com tratamento resiliente e dados mock ricos para teste imediato.
 - `services/geminiService.js`: Chamadas estruturadas ao Google Gemini Flash para diagnósticos e geração de textos de alta persuasão e clareza.
 - `services/analyticsEngine.js`: Regras matemáticas para cálculo de Hook Rate, Hold Rate, detecção de fadiga e curvas de leilão.
+- `services/authService.js`: Conexão com Supabase (`public.client_access_pins`) para validação, armazenamento e rotação de PINs com RLS e fallback seguro.
 
 ---
 

@@ -59,12 +59,13 @@
 
       <!-- Seletor Multi-Conta -->
       <div class="flex items-center gap-3">
-        <div class="flex items-center gap-2 bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2">
-          <i data-lucide="building-2" class="w-4 h-4 text-indigo-400"></i>
-          <label for="select-conta-gestor" class="text-xs text-slate-400">Conta:</label>
-          <select id="select-conta-gestor" onchange="trocarConta(this.value)" class="bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer">
+        <div class="relative flex items-center bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2">
+          <i data-lucide="building-2" class="w-4 h-4 text-indigo-400 mr-2 flex-shrink-0"></i>
+          <label for="select-conta-gestor" class="text-xs text-slate-400 mr-2">Conta:</label>
+          <select id="select-conta-gestor" onchange="trocarConta(this.value)" class="bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer appearance-none pr-8">
             <option value="act_1717085079153654" class="bg-slate-900">Start Agência Digital (act_1717085079153654)</option>
           </select>
+          <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 pointer-events-none absolute right-3"></i>
         </div>
 
         <button onclick="carregarDadosDashboard()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all" title="Atualizar Métricas">
@@ -72,6 +73,57 @@
         </button>
       </div>
     </div>
+
+    <!-- ============================================================ -->
+    <!-- CARD DE ACESSO DO CLIENTE (PIN & COMPARTILHAMENTO WHATSAPP)   -->
+    <!-- ============================================================ -->
+    <section class="glass-panel rounded-2xl p-5 border-emerald-500/30 bg-gradient-to-r from-slate-900 via-slate-900 to-emerald-950/20 shadow-xl">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        
+        <div class="flex items-center gap-3.5">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="key-round" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-sm font-bold text-white">Acesso do Cliente ao Portal (PIN)</h3>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Supabase RLS</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Conta ativa: <strong id="pin-conta-nome" class="text-slate-200">Start Agência Digital</strong> • Sessão segura de 24h sem login/senha complexos.
+            </p>
+          </div>
+        </div>
+
+        <!-- Ações do PIN: Visualizar, Alterar e Copiar para WhatsApp -->
+        <div class="flex flex-wrap items-center gap-2.5">
+          <div class="flex items-center bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 focus-within:border-emerald-500 transition-colors">
+            <span class="text-xs text-slate-400 font-mono mr-2">PIN:</span>
+            <input type="password" id="input-pin-gestor" value="1234" maxlength="6" class="bg-transparent text-sm font-mono font-bold text-emerald-400 w-16 text-center tracking-widest focus:outline-none" title="Digite 4 a 6 dígitos">
+            <button type="button" onclick="alternarVisibilidadePin()" class="text-slate-400 hover:text-white p-1 ml-1" title="Mostrar/Ocultar PIN">
+              <i data-lucide="eye" id="icone-olho-pin" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <button type="button" id="btn-salvar-pin" onclick="salvarNovoPinGestor()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-200 hover:text-white flex items-center gap-1.5 transition-all">
+            <i data-lucide="save" class="w-3.5 h-3.5"></i>
+            <span>Salvar PIN</span>
+          </button>
+
+          <button type="button" onclick="copiarLinkComPinGestor()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs flex items-center gap-2 transition-all shadow-lg shadow-emerald-600/20">
+            <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+            <span>Copiar Link c/ PIN (WhatsApp)</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Feedback de salvamento -->
+      <div id="feedback-pin-salvo" class="hidden mt-3 pt-3 border-t border-slate-800 text-xs text-emerald-400 flex items-center gap-1.5">
+        <i data-lucide="check-circle" class="w-4 h-4"></i>
+        <span>PIN atualizado no Supabase com sucesso! O novo PIN já está ativo para o cliente.</span>
+      </div>
+    </section>
 
     <!-- ============================================================ -->
     <!-- CARD DO CO-PILOTO IA (HUMAN-IN-THE-LOOP COM 1 CLIQUE)         -->
@@ -236,6 +288,18 @@
 
   </main>
 
+  <!-- Toast Flutuante de Link Copiado para o WhatsApp -->
+  <div id="toast-copiado-pin" class="fixed bottom-6 right-6 z-50 transform translate-y-2 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900 border border-emerald-500/40 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+    <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+      <i data-lucide="check" class="w-4 h-4"></i>
+    </div>
+    <div class="text-xs">
+      <p class="font-bold text-emerald-400">Mensagem Copiada!</p>
+      <p class="text-slate-300">Link e PIN prontos para colar no WhatsApp do cliente.</p>
+    </div>
+  </div>
+
   <script src="/js/gestor.js"></script>
+  <script src="/js/gestor-pin.js"></script>
 </body>
 </html>

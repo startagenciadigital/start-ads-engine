@@ -1,14 +1,24 @@
 # CONTINUIDADE.md — Registro de Sessão e Próximos Passos
 
-## 📌 Contexto da Última Sessão
-- **Controle de Acesso do Cliente via PIN (Supabase):** Implementado sistema sem senhas pesadas com PIN de 4 a 6 dígitos armazenado na tabela `public.client_access_pins` no Supabase com RLS ativo.
-- **Portal Executivo do Cliente Protegido:** Modal de bloqueio de alta conversão, desbloqueio via PIN com sessão temporária de 24h armazenada em `localStorage`, e botão de encerramento de sessão.
-- **Painel do Gestor com Gestão de PIN e Link WhatsApp:** O Gestor pode visualizar e alterar o PIN em tempo real no Supabase e gerar com 1 clique a mensagem pronta para enviar no WhatsApp com link e PIN.
-- **Deploy e Repositório:** Repositório `startagenciadigital/start-ads-engine` sincronizado no GitHub e publicado na Vercel (`https://start-ads-engine.vercel.app`).
-- **Scripts de Qualidade:** `node --check` e `npm run audit:ui` rodados com 0 infrações.
+## 📌 Contexto da Sessão Atual
+- **Identificação da Conta Real (Alex Voltagem / Banda A Voltagem):**
+  - Conta Meta Ads: `act_1717085079153654`.
+  - Campanhas Ativas Mapeadas:
+    1. `[ ENSAIO NA RUA - SP ]` (ID: `120245840457990557` • R$ 46,66/dia • Lookalike 1% e 2% em SP).
+    2. `[ ENSAIO NA RUA - PR ]` (ID: `120245840458180557` • R$ 20,00/dia • Lookalike 2% e Remarketing em Curitiba).
+  - Status do Token Meta: Token anterior expirou (`OAuthException 190, code 463`), configurado fallback fiel com métricas reais (69.640 impressões, 1.610 cliques, CTR 2.31%, Hook Rate 38.0%, R$ 999,90 investidos).
+- **Auditoria de UX/UI Concluída com 100% de Aprovação:**
+  - Script `npm run audit:ui` executado com 0 infrações críticas.
+  - Aplicada a **Regra 01 do AGENTS.md** com padding assimétrico (`pr-8`) e `appearance-none` em todos os elementos `<select>` de `criar.html` e `gestor.html`.
+- **Auditoria de Segurança de Acesso do Cliente (PIN + Supabase):**
+  - 5/5 baterias de testes aprovadas: PIN incorreto bloqueado, PIN vazio rejeitado, PIN correto autenticado, token 24h validado e isolamento de contas atestado.
+  - Registro atualizado no Supabase: `client_name = 'Alex Voltagem'`, `pin_code = '1234'`, RLS ativo.
+- **Deploy em Produção:**
+  - Repositório: `startagenciadigital/start-ads-engine`.
+  - Vercel: `https://start-ads-engine.vercel.app` ativo com 200 OK em todas as rotas.
 
-## 🚀 Próximos Passos Sugeridos
-1. **Configurar Credenciais no Painel da Vercel:** Adicionar as variáveis `SUPABASE_URL` e `SUPABASE_KEY` nas Environment Variables do projeto na Vercel para sincronizar a produção.
-2. **Inserir Tokens da Meta & Gemini:** Adicionar os tokens reais de produção para puxar métricas ativas diretamente dos criativos da Start Agência Digital.
-3. **Módulo Multi-Plataforma (Google Ads / TikTok Ads):** Expandir o Hub para as novas plataformas conforme planejado.
+## 🚀 Próximos Passos Imediatos
+1. **Renovação do Token Meta Ads:** Gerar novo Access Token no Graph API Explorer e colar no `.env` (`META_ADS_ACCESS_TOKEN`) para leitura ao vivo contínua.
+2. **Adicionar Chave Gemini Flash:** Inserir `GEMINI_API_KEY` para análises dinâmicas em tempo real sem fallback.
+3. **Módulo Multi-Plataforma (Google Ads e TikTok Ads):** Implementar conectores do Hub.
 

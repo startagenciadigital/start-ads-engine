@@ -1,5 +1,5 @@
 {
-  "name": "meugestor",
+  "name": "start-ads-engine",
   "version": "1.0.0",
   "description": "START ADS ENGINE - Plataforma de Tráfego Pago com IA (Meta Ads API + Google Gemini)",
   "main": "server.js",

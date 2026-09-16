@@ -18,10 +18,11 @@ O **START ADS ENGINE** é uma plataforma concebida para potencializar a gestão 
 ## 2. Mapa de Rotas e Endpoints
 
 ### Rotas de Interface Web (Frontend)
-- `/` (`public/index.html`): Hub Multiplataforma com seleção entre Meta Ads (ativo), Google Ads (em desenvolvimento) e TikTok Ads (em desenvolvimento).
-- `/criar` (`public/criar.html`): Wizard universal em 4 etapas (Objetivo, Orçamento/Pacing, Público/Geolocalização, Criativo Duplo) com auditoria Pré-Voo IA e trava de segurança (`PAUSED`/`ACTIVE`).
-- `/gestor` (`public/gestor.html`): Dashboard do gestor com seletor multi-conta, curva de leilão de CPM (Chart.js), tabela de criativos com Hook/Hold Rate e Co-Piloto de 1 clique.
-- `/cliente` (`public/cliente.html`): Portal executivo para empresários (`?conta=...`), 4 KPIs comerciais transparentes, resumo em português da IA e ranking de vídeos.
+- `/` (`public/index.html`): Hub Multiplataforma com seleção entre Meta Ads (ativo), Google Ads e TikTok Ads.
+- `/criar` (`public/criar.html`): Wizard universal em 4 etapas com auditoria Pré-Voo IA e trava de segurança.
+- `/gestor` (`public/gestor.html`): Dashboard do gestor com seletor multi-conta, curva de leilão de CPM, métricas de vídeo e Co-Piloto de 1 clique.
+- `/cliente` (`public/cliente.html`): Portal executivo com barreira de PIN, 4 KPIs comerciais e ranking de criativos.
+- **Navegação Global (`public/js/sidebar.js`, `public/css/sidebar.css`):** Barra lateral unificada e responsiva com modo compacto persistente (`localStorage`), gaveta mobile, detecção automática de rota ativa e card interativo de diagnóstico das APIs (`200 OK`).
 
 ### Endpoints da API REST (`api/`)
 - `GET /api/contas`: Lista de contas de anúncio com saldos, moeda e status.
@@ -46,7 +47,8 @@ O **START ADS ENGINE** é uma plataforma concebida para potencializar a gestão 
 ---
 
 ## 4. Protocolos e Governança de Código
-Todos os protocolos corporativos estão documentados em `[documentation]/protocolos/`:
+Todos os protocolos corporativos e tutoriais operacionais estão documentados em `[documentation]/`:
+- `[documentation]/TUTORIAL_TOKEN_PERMANENTE_META.md`: Passo a passo para criação de token que nunca expira via System User.
 - `PROTOCOLO_START.md`: Checklist de inicialização de sessão e sincronia de repositório.
 - `PROTOCOLO_DEPLOY.md`: Trava de segurança para deploy na Vercel e produção.
 - `PROTOCOLO_DE_REFATORACAO_DE_MONOLITOS.md`: Diretrizes anti-monolito e trava absoluta.

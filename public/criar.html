@@ -8,24 +8,20 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/sidebar.css">
 </head>
 <body class="min-h-screen flex flex-col bg-slate-950 text-slate-100 selection:bg-cyan-500 selection:text-white">
 
-  <!-- Header Superior -->
-  <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-40">
+  <!-- Header Superior (Desktop) -->
+  <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-40 hidden lg:block">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <a href="/" class="flex items-center gap-3 group">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-cyan-500 to-emerald-400 p-[2px] flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-              <i data-lucide="zap" class="w-5 h-5 text-cyan-400 group-hover:rotate-12 transition-transform"></i>
-            </div>
-          </div>
-          <div>
-            <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">START ADS ENGINE</span>
-            <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-500/40 text-indigo-300">Criador Meta</span>
-          </div>
-        </a>
+      <!-- Breadcrumb Contextual -->
+      <div class="flex items-center gap-2 text-xs">
+        <div class="w-2 h-2 rounded-full bg-indigo-500"></div>
+        <span class="text-slate-400">Campanhas</span>
+        <span class="text-slate-600">/</span>
+        <span class="font-semibold text-slate-200">Criador Universal Meta</span>
+        <span class="ml-2 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-500/40 text-indigo-300">Wizard 4 Etapas</span>
       </div>
 
       <nav class="flex items-center gap-3 text-sm">
@@ -737,6 +733,7 @@
     </div>
   </div>
 
+  <script src="/js/sidebar.js"></script>
   <script src="/js/criar.js"></script>
 </body>
 </html>

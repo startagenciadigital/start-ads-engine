@@ -20,8 +20,8 @@
   - 5/5 baterias de testes aprovadas: PIN incorreto bloqueado, PIN vazio rejeitado, PIN correto autenticado, token 24h validado e isolamento de contas atestado.
   - Registro atualizado no Supabase: `client_name = 'Alex Voltagem'`, `pin_code = '1234'`, RLS ativo.
 - **Deploy em Produção:**
-  - Repositório: `startagenciadigital/start-ads-engine`.
-  - Vercel: `https://start-ads-engine.vercel.app` ativo com 200 OK em todas as rotas.
+  - Repositório: `startagenciadigital/start-ads-engine` (Commit `6f440af` enviado com sucesso).
+  - Vercel: `https://start-ads-engine.vercel.app` ativo com build automático disparado.
 
 ## 🚀 Próximos Passos Imediatos
 1. **Geração do Token Meta Ads Permanente:**

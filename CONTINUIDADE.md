@@ -85,9 +85,17 @@
        - Extração em tempo real da cópia de engajamento do Alex Voltagem e thumbnails em alta resolução do CDN do Facebook.
     4. **Auditoria UX/UI (`npm run audit:ui`):** Aprovada com **0 infrações críticas**.
 
+- **Deploy em Produção (Protocolo Deploy Executado com Sucesso):**
+  - Validação de Sintaxe (`node --check`): Aprovada em todos os arquivos alterados.
+  - Auditoria de Dependências (`npm audit`): **0 vulnerabilidades**.
+  - Auditoria de Segredos: Nenhuma chave hardcoded; `.env` rigorosamente ignorado pelo `.gitignore`.
+  - Verificação de Endpoints: `GET /api/contas` e `GET /api/metricas` responderam com **200 OK**.
+  - Commit Limpo: `de3e285` (*"feat(gestor): redesign executivo completo das 4 abas estilo Pulse BI com dual-theme e Central de Conexoes"*).
+  - Push Remoto: Enviado com sucesso para `main -> main` em `startagenciadigital/start-ads-engine`.
+  - Vercel: Build automático de produção disparado em `https://start-ads-engine.vercel.app`.
+
 ## 🚀 Próximos Passos Imediatos
-1. **Verificação Visual Completa:** Acessar `http://localhost:3000/gestor` e navegar pelas 4 abas (`Visão geral`, `Campanhas`, `Conjuntos` e `Criativos`).
-2. **Alternar Entre Modos:** Testar o botão "Modo Pulse / Modo Dark" para conferir a fidelidade visual tanto no tema claro quanto no escuro.
-3. **Deploy em Produção (Protocolo Deploy):** Disparar `git add .`, commit e `git push origin main`.
+1. **Configuração de Variáveis na Vercel:** Caso ainda não tenha inserido o novo token permanente no painel da Vercel, atualizar `META_ADS_ACCESS_TOKEN` em *Settings > Environment Variables* da Vercel.
+2. **Monitoramento do Show:** Acompanhar as métricas ao vivo da campanha da Banda A Voltagem até a data do evento no Bolshoi Pub (19/09/2026).
 
 

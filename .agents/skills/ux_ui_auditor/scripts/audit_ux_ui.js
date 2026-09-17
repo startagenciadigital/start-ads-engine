@@ -13,6 +13,7 @@ const TARGET_FILES = [
   path.join(PUBLIC_DIR, 'criar.html'),
   path.join(PUBLIC_DIR, 'gestor.html'),
   path.join(PUBLIC_DIR, 'cliente.html'),
+  path.join(PUBLIC_DIR, 'conexoes.html'),
   path.join(PUBLIC_DIR, 'css', 'styles.css')
 ];
 

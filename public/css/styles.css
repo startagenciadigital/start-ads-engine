@@ -110,3 +110,26 @@ body {
 input[type=range] {
   accent-color: #6366f1;
 }
+
+/* Pulse BI Theme Utilities */
+.pulse-card {
+  background-color: #0f172a;
+  color: #f8fafc;
+  border: 1px solid #1e293b;
+}
+
+body.pulse-light .pulse-card {
+  background-color: #ffffff;
+  color: #0f172a;
+  border-color: #e2e8f0;
+}
+
+.pulse-pill-active {
+  background-color: #1e293b;
+  color: #ffffff;
+}
+
+body.pulse-light .pulse-pill-active {
+  background-color: #0f172a;
+  color: #ffffff;
+}

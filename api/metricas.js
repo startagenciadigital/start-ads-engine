@@ -6,7 +6,8 @@ const metaService = require('../services/metaService');
 router.get('/:contaId?', async (req, res) => {
   try {
     const contaId = req.params.contaId || req.query.contaId || metaService.DEFAULT_ACCOUNT_ID;
-    const dados = await metaService.obterMetricasConta(contaId);
+    const periodo = req.query.periodo || 'last_30d';
+    const dados = await metaService.obterMetricasConta(contaId, periodo);
     return res.json({ sucesso: true, dados });
   } catch (err) {
     console.error('[API /api/metricas] Erro:', err);

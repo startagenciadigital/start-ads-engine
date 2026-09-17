@@ -24,8 +24,13 @@ app.use('/api/analise-ia', require('./api/analise-ia'));
 app.use('/api/executar-acao', require('./api/executar-acao'));
 app.use('/api/auth-pin', require('./api/auth-pin'));
 app.use('/api/gestao-pin', require('./api/gestao-pin'));
+app.use('/api/conexoes', require('./api/conexoes'));
 
 // Rotas amigáveis para as páginas da aplicação
+app.get('/conexoes', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'conexoes.html'));
+});
+
 app.get('/criar', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'criar.html'));
 });
@@ -59,6 +64,7 @@ if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
     console.log(`🛠️  Criar:       http://localhost:${PORT}/criar`);
     console.log(`📊 Gestor:      http://localhost:${PORT}/gestor`);
     console.log(`👤 Cliente:     http://localhost:${PORT}/cliente`);
+    console.log(`🔑 Conexões:    http://localhost:${PORT}/conexoes`);
     console.log(`====================================================`);
   });
 }
